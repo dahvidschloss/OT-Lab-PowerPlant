@@ -1,0 +1,42 @@
+{
+  "modbus": {"host": "0.0.0.0", "port": 502},
+  "devices": [
+    {
+      "name": "ccpp",
+      "driver": "dnp3",
+      "host": "CyberCityPwrPlant",
+      "port": 20000,
+      "outstation": 10,
+      "poll_seconds": 1,
+      "comms": "di:15",
+      "status": "ir:15",
+      "points": [
+        {"tag": "speed_rpm",         "source": "ai:0",   "modbus": "ir:0"},
+        {"tag": "frequency_hz_x100", "source": "ai:1",   "modbus": "ir:1"},
+        {"tag": "valve_pct_x10",     "source": "ai:2",   "modbus": "ir:2"},
+        {"tag": "output_mw_x10",     "source": "ai:3",   "modbus": "ir:3", "scale": 0.1},
+        {"tag": "load_pct_x10",      "source": "ai:4",   "modbus": "ir:4"},
+        {"tag": "steam_sp_pct_x10",  "source": "ai:5",   "modbus": "ir:5"},
+        {"tag": "grid_hz_x100",      "source": "ai:6",   "modbus": "ir:6"},
+        {"tag": "slip_deg_x10",      "source": "ai:7",   "modbus": "ir:7"},
+
+        {"tag": "running",           "source": "bi:0",   "modbus": "di:0"},
+        {"tag": "breaker_closed",    "source": "bi:1",   "modbus": "di:1"},
+        {"tag": "tripped",           "source": "bi:2",   "modbus": "di:2"},
+        {"tag": "grid_connected",    "source": "bi:3",   "modbus": "di:3"},
+        {"tag": "damaged",           "source": "bi:4",   "modbus": "di:4"},
+
+        {"tag": "cmd_run",           "source": "crob:0", "modbus": "co:0"},
+        {"tag": "cmd_breaker",       "source": "crob:1", "modbus": "co:1"},
+        {"tag": "cmd_trip",          "source": "crob:2", "modbus": "co:2"},
+        {"tag": "cmd_reset",         "source": "crob:3", "modbus": "co:3"},
+        {"tag": "cmd_autosync",      "source": "crob:4", "modbus": "co:4"},
+        {"tag": "cmd_sync_bypass",   "source": "crob:5", "modbus": "co:5"},
+        {"tag": "cmd_repair",        "source": "crob:6", "modbus": "co:6"},
+
+        {"tag": "steam_sp_pct",      "source": "ao:0",   "modbus": "hr:0"},
+        {"tag": "load_sp_pct",       "source": "ao:1",   "modbus": "hr:1"}
+      ]
+    }
+  ]
+}

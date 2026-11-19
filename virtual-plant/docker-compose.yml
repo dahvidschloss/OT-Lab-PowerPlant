@@ -1,0 +1,89 @@
+name: ot-lab-powerplant
+services:
+  
+  CyberCityPwrPlant:
+    build: .
+    image: otlab/ccpwr:local
+    command: ["python", "server.py", "--dnp-host", "0.0.0.0", "--grid", "grid:20100"]
+    ports:
+      - "${PLANT_PORT:-20000}:20000"
+    restart: unless-stopped
+    container_name: ccpwr
+    environment:
+      FEEDBACK: ${ESP32_FEEDBACK:-}
+    tty: true
+    logging:
+      options:
+        max-size: "1m"  # with tty every redraw is logged; cap it so it can't fill the disk
+    networks:
+     - otlab
+     - gridnet
+    depends_on:
+      - grid
+
+  # Grid bus: only on gridnet
+  grid:
+    build: .
+    image: otlab/ccpwr:local
+    command: ["python", "grid.py"]
+    container_name: ccgrid
+    restart: unless-stopped
+    logging:
+      options:
+        max-size: "1m"
+    networks:
+      - gridnet
+
+  # SCADA front-end processor: DNP3 south on otlab, Modbus north to FUXA on hminet.
+  fep:
+    build: .
+    image: otlab/ccpwr:local
+    command: ["python", "gateway.py", "gateway.json"]
+    container_name: ccfep
+    restart: unless-stopped
+    logging:
+      options:
+        max-size: "1m"
+    networks:
+      - otlab
+      - hminet
+    depends_on:
+      - CyberCityPwrPlant
+
+  fuxa:
+    build:
+      context: .
+      dockerfile_inline: |
+        FROM frangoteam/fuxa:latest
+        RUN npm install modbus-serial@8.0.19
+    image: otlab/fuxa:local
+    container_name: otlab-fuxa
+    restart: unless-stopped
+    ports:
+      - "${FUXA_PORT:-1881}:1881"
+    volumes:
+      - fuxa-appdata:/usr/src/app/FUXA/server/_appdata
+      - fuxa-db:/usr/src/app/FUXA/server/_db
+      - fuxa-logs:/usr/src/app/FUXA/server/_logs
+      - fuxa-images:/usr/src/app/FUXA/server/_images
+    networks:
+      - hminet
+    depends_on:
+      - fep
+
+networks:
+  otlab:
+    name: otlab
+    driver: bridge
+  gridnet:
+    name: gridnet
+    internal: true  # no host or internet route
+  hminet:
+    name: hminet
+    driver: bridge  
+
+volumes:
+  fuxa-appdata:
+  fuxa-db:
+  fuxa-logs:
+  fuxa-images:

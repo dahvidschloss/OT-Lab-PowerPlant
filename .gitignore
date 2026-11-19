@@ -1,0 +1,8 @@
+virtual-plant/__pycache__/
+virtual-plant/.venv/
+virtual-plant/venv/
+virtual-plant/.env
+InsMats/
+
+HAL-tools/__pycache__/
+HAL-tools/.venv/
